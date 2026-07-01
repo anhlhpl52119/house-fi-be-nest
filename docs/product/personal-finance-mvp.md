@@ -129,3 +129,23 @@ US-007 establishes the installment planning and payment slice:
 - paying the final pending installment marks the plan `completed` while keeping the original installment plan as the spending record.
 
 US-007 does not implement plan/payment cancellation, partial payments, interest decomposition, full reports, or product audit logs.
+
+US-008 establishes the asset tracking and cash-linkage slice:
+
+- authenticated members can create household-scoped asset definitions for gold, stock, and crypto;
+- authenticated members can list active assets and fetch one asset with its derived current quantity;
+- authenticated members can record immutable asset buy/sell transactions using positive decimal quantities and positive VND totals;
+- each asset buy creates one linked generated `asset_transaction` cash expense, and each sell creates one linked generated `asset_transaction` cash income;
+- sell transactions are rejected when they would reduce the derived holding quantity below zero.
+
+US-008 does not implement asset transaction edits/deletes, asset deactivation, transfers, fees, splits, market-price feeds, realized/unrealized PnL, full reports, or product audit logs.
+
+US-009 establishes the saving deposit and maturity slice:
+
+- authenticated members can create household-scoped saving deposits with bank, principal, interest rate, planned start/maturity dates, optional term months, optional expected interest, paid-by member, and note;
+- creating a saving deposit creates one linked generated `saving_deposit` cash expense for the principal outflow;
+- authenticated members can list and fetch household saving deposits with status/date/paid-by filters;
+- authenticated members can mature one active saving deposit with actual interest, creating one linked generated `saving_maturity` cash income for principal plus actual interest;
+- saving deposit cash flows affect cash balance but are not lifestyle spending.
+
+US-009 does not implement early withdrawal, cancellation, rollover, partial maturity, automatic interest calculation, full reports, or product audit logs.

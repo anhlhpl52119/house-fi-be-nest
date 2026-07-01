@@ -21,10 +21,10 @@ Sources:
 | E04 Cash Transactions | Cash income/expense APIs and ledger semantics for real cash-impacting daily transactions. | US-005 implemented |
 | E05 Credit Cards | Credit-card spending, pending transactions, and per-transaction settlement payments without double-counting expense. | US-006 implemented |
 | E06 Installments | Installment plans, scheduled payments, actual payments, and reporting semantics for original spend versus cash flow. | US-007 implemented |
-| E07 Assets | Asset definitions and buy/sell ledgers for gold, stock, and crypto using decimal quantities and VND cash movements. | unsliced |
-| E08 Savings | Saving deposits, maturity workflow, expected/actual interest, and linked cash-flow records. | unsliced |
+| E07 Assets | Asset definitions and buy/sell ledgers for gold, stock, and crypto using decimal quantities and VND cash movements. | US-008 implemented |
+| E08 Savings | Saving deposits, maturity workflow, expected/actual interest, and linked cash-flow records. | US-009 implemented |
 | E09 Reports | Derived reports for spending incurred, cash flow, obligations, assets, and savings. | unsliced |
 
 ## Suggested Next Slice
 
-US-007 establishes `E06 Installments` with generated payment schedules and cash-payment settlement. After US-007, the next slice should start `E07 Assets`, because the cash-ledger linkage pattern is now exercised across both credit-card and installment obligations and the roadmap's next core financial domain is asset buy/sell tracking.
+US-009 starts `E08 Savings` with saving deposits, maturity workflow, and generated cash movements. After US-009, the next slice should start `E09 Reports`, because all core transaction domains will have ledger records for spending incurred, cash flow, obligations, assets, and savings aggregation.

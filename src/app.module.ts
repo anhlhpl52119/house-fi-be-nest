@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AssetsModule } from './assets/assets.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { CashTransactionsModule } from './cash-transactions/cash-transactions.module.js';
 import { CategoriesModule } from './categories/categories.module.js';
@@ -9,6 +10,7 @@ import { DatabaseModule } from './database/database.module.js';
 import { HealthModule } from './health/health.module.js';
 import { HouseholdsModule } from './households/households.module.js';
 import { InstallmentsModule } from './installments/installments.module.js';
+import { SavingsModule } from './savings/savings.module.js';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { InstallmentsModule } from './installments/installments.module.js';
     CashTransactionsModule,
     CreditCardsModule,
     InstallmentsModule,
+    AssetsModule,
+    SavingsModule,
   ],
 })
 export class AppModule {}
