@@ -72,3 +72,13 @@ US-001 establishes the backend foundation needed for later feature stories:
 - health endpoint for platform smoke proof.
 
 US-001 does not complete every domain API. Later stories implement CRUD and workflows per domain.
+
+US-002 establishes the first auth and identity API slice:
+
+- email/password registration and login;
+- JWT access tokens;
+- persisted, hashed, rotating refresh tokens;
+- logout and current-user APIs;
+- default household and owner membership creation during registration.
+
+US-002 does not implement invite/member management, password reset, email verification, MFA, rate limiting, category seeding, or financial domain APIs.
