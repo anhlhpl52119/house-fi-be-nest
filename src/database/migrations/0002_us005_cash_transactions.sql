@@ -1,0 +1,2 @@
+ALTER TABLE "cash_transactions" ADD COLUMN "is_active" boolean DEFAULT true NOT NULL;--> statement-breakpoint
+CREATE INDEX "cash_transactions_household_source_idx" ON "cash_transactions" USING btree ("household_id","source_type","source_id");

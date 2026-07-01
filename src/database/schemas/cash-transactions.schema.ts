@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { bigint, check, date, index, pgTable, text, uuid, varchar } from 'drizzle-orm/pg-core';
+import { bigint, boolean, check, date, index, pgTable, text, uuid, varchar } from 'drizzle-orm/pg-core';
 
 import { timestamps, uuidPrimaryKey } from './_helpers.js';
 import { categories } from './categories.schema.js';
@@ -24,6 +24,7 @@ export const cashTransactions = pgTable(
     note: text('note'),
     sourceType: varchar('source_type', { length: 40 }),
     sourceId: uuid('source_id'),
+    isActive: boolean('is_active').notNull().default(true),
     ...timestamps(),
   },
   (table) => [
@@ -38,6 +39,7 @@ export const cashTransactions = pgTable(
       table.paidByUserId,
       table.transactionDate,
     ),
+    index('cash_transactions_household_source_idx').on(table.householdId, table.sourceType, table.sourceId),
     check('cash_transactions_type_check', sql`${table.type} in ('income', 'expense')`),
     check('cash_transactions_amount_check', sql`${table.amount} > 0`),
     check(

@@ -100,3 +100,13 @@ US-004 establishes the category slice for later financial records:
 - category validation enforces income/expense type, same-type parent relationships, and a maximum depth of two levels.
 
 US-004 does not implement AI natural-language transaction creation, transaction CRUD, report category usage, or admin management of system categories.
+
+US-005 establishes the cash transaction slice for real cash-impacting household ledger entries:
+
+- authenticated members can create, list, read, update, and soft-delete manual cash income/expense transactions;
+- all records are scoped to the authenticated user's current household and keep `created_by_user_id`;
+- transaction filters support type, date range, category, paid-by user, and source type;
+- category and paid-by references are validated against the current household boundary;
+- a basic cash balance endpoint derives income minus expense from active cash transactions.
+
+US-005 does not implement credit-card settlement, installment payment, asset buy/sell, saving deposit workflows, full reports, product audit logs, multiple cash accounts, or destructive ledger deletes.
