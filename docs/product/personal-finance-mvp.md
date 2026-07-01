@@ -110,3 +110,12 @@ US-005 establishes the cash transaction slice for real cash-impacting household 
 - a basic cash balance endpoint derives income minus expense from active cash transactions.
 
 US-005 does not implement credit-card settlement, installment payment, asset buy/sell, saving deposit workflows, full reports, product audit logs, multiple cash accounts, or destructive ledger deletes.
+
+US-006 establishes the credit-card spending and settlement slice:
+
+- authenticated members can create household-scoped credit-card expense transactions that count as spending incurred but not immediate cash movement;
+- transaction listing defaults to `pending` credit-card obligations and also supports resolved/cancelled status filtering;
+- resolving one pending credit-card transaction creates one linked credit-card payment record and one generated `credit_card_payment` cash expense;
+- generated settlement cash flow affects cash balance only at payment time, while the original credit-card transaction remains the spending record.
+
+US-006 does not implement partial settlements, card account metadata, statement-cycle management, transaction editing/cancellation, full reports, or product audit logs.
