@@ -8,6 +8,7 @@ import { CreditCardsModule } from './credit-cards/credit-cards.module.js';
 import { DatabaseModule } from './database/database.module.js';
 import { HealthModule } from './health/health.module.js';
 import { HouseholdsModule } from './households/households.module.js';
+import { InstallmentsModule } from './installments/installments.module.js';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { HouseholdsModule } from './households/households.module.js';
     CategoriesModule,
     CashTransactionsModule,
     CreditCardsModule,
+    InstallmentsModule,
   ],
 })
 export class AppModule {}

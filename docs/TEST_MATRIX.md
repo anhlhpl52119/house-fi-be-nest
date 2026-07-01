@@ -20,6 +20,7 @@ Product behavior is tracked in durable Harness records and summarized here. Do n
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | US-001 | `docs/product/personal-finance-mvp.md` | yes | no | no | yes | implemented | `npm run lint`, `npm run build`, `npm run db:generate`, and `/health` smoke passed on 2026-07-01. |
 | US-002 | `docs/stories/epics/E01-auth-and-users/US-002-auth-and-user-identity/` | no | yes | yes | yes | implemented | `npm run lint`, `npm run build`, `npm test`, isolated Postgres `db:migrate`, `/health` smoke, and auth API E2E smoke passed on 2026-07-01. |
+| US-007 | `docs/stories/epics/E06-installments/US-007-installments/` | yes | yes | yes | yes | implemented | `npm run lint`, `npm run build`, `npm test`, isolated Postgres `db:migrate`, and installment API smoke passed on 2026-07-01. |
 
 ## Evidence Rules
 

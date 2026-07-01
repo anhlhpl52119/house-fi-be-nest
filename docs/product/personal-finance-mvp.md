@@ -119,3 +119,13 @@ US-006 establishes the credit-card spending and settlement slice:
 - generated settlement cash flow affects cash balance only at payment time, while the original credit-card transaction remains the spending record.
 
 US-006 does not implement partial settlements, card account metadata, statement-cycle management, transaction editing/cancellation, full reports, or product audit logs.
+
+US-007 establishes the installment planning and payment slice:
+
+- authenticated members can create household-scoped installment plans that record original spending without immediate cash movement;
+- creating a plan generates scheduled monthly installment payments;
+- authenticated members can list active installment plans, read one plan with its schedule, and view pending upcoming installment payments;
+- paying one pending installment creates one linked generated `installment_payment` cash expense;
+- paying the final pending installment marks the plan `completed` while keeping the original installment plan as the spending record.
+
+US-007 does not implement plan/payment cancellation, partial payments, interest decomposition, full reports, or product audit logs.
