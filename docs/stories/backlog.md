@@ -23,8 +23,8 @@ Sources:
 | E06 Installments | Installment plans, scheduled payments, actual payments, and reporting semantics for original spend versus cash flow. | US-007 implemented |
 | E07 Assets | Asset definitions and buy/sell ledgers for gold, stock, and crypto using decimal quantities and VND cash movements. | US-008 implemented |
 | E08 Savings | Saving deposits, maturity workflow, expected/actual interest, and linked cash-flow records. | US-009 implemented |
-| E09 Reports | Derived reports for spending incurred, cash flow, obligations, assets, and savings. | unsliced |
+| E09 Reports | Derived reports for spending incurred, cash flow, obligations, assets, and savings. | US-010 in progress |
 
 ## Suggested Next Slice
 
-US-009 starts `E08 Savings` with saving deposits, maturity workflow, and generated cash movements. After US-009, the next slice should start `E09 Reports`, because all core transaction domains will have ledger records for spending incurred, cash flow, obligations, assets, and savings aggregation.
+US-010 starts `E09 Reports` with read-only derived report endpoints for spending incurred, cash flow, upcoming obligations, asset holdings, and savings aggregation.

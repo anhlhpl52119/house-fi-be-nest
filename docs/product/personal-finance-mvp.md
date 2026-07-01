@@ -149,3 +149,13 @@ US-009 establishes the saving deposit and maturity slice:
 - saving deposit cash flows affect cash balance but are not lifestyle spending.
 
 US-009 does not implement early withdrawal, cancellation, rollover, partial maturity, automatic interest calculation, full reports, or product audit logs.
+
+US-010 establishes the first reports slice across completed ledger domains:
+
+- authenticated members can fetch a monthly spending-incurred report that counts manual cash expenses, credit-card spending, and original installment purchases without double-counting generated settlement/payment cash flows;
+- authenticated members can fetch a cash-flow report from active cash transactions, including generated credit-card, installment, asset, and savings movements;
+- authenticated members can fetch upcoming obligations from pending credit-card transactions and installment payments;
+- authenticated members can fetch asset holdings and recorded buy/sell totals derived from asset transaction ledgers;
+- authenticated members can fetch savings totals and upcoming maturities derived from saving deposits.
+
+US-010 does not implement budgets, recurring bills, asset market valuation, realized/unrealized PnL, report snapshots, exports, charts, or product audit logs.

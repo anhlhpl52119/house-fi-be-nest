@@ -10,6 +10,7 @@ import { DatabaseModule } from './database/database.module.js';
 import { HealthModule } from './health/health.module.js';
 import { HouseholdsModule } from './households/households.module.js';
 import { InstallmentsModule } from './installments/installments.module.js';
+import { ReportsModule } from './reports/reports.module.js';
 import { SavingsModule } from './savings/savings.module.js';
 
 @Module({
@@ -25,6 +26,7 @@ import { SavingsModule } from './savings/savings.module.js';
     InstallmentsModule,
     AssetsModule,
     SavingsModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}
