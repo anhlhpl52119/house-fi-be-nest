@@ -22,6 +22,7 @@ Expose generated OpenAPI documentation for the existing NestJS REST API so devel
 - The NestJS app generates an OpenAPI document at startup for the current API surface.
 - Swagger UI is exposed from the running app at a stable route.
 - The document advertises the bearer authentication scheme used by protected endpoints.
+- Request bodies, path params, query params, and response envelopes are described for the current REST endpoints.
 - Existing build validation still passes after Swagger is integrated.
 
 ## Design Notes
@@ -55,3 +56,8 @@ Add a durable story record for the Swagger documentation slice and capture proof
 - `npm run lint && npm run build`
 - Started `node dist/main.js` and fetched `http://127.0.0.1:3000/api/docs-json`
 - Verified the generated spec title is `Personal Finance Backend API`, version is `1.0.0`, it exposes 31 paths, and it includes the `bearer` security scheme.
+- Verified enriched schemas in the generated spec, including:
+  - `POST /api/v1/auth/register` request body fields `displayName`, `email`, and `password`;
+  - `POST /api/v1/auth/register` response envelope fields `user`, `household`, and `tokens`;
+  - `GET /api/v1/reports/monthly-spending` query params `month` and `paidByUserId`;
+  - `GET /api/v1/cash-transactions/{id}` path param `id`.

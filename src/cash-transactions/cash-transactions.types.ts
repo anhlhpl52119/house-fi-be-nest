@@ -1,36 +1,35 @@
-export type CashTransactionType = 'income' | 'expense';
+import { z } from 'zod';
 
-export type CashTransactionSourceType =
-  | 'manual'
-  | 'asset_transaction'
-  | 'saving_deposit'
-  | 'saving_maturity'
-  | 'credit_card_payment'
-  | 'installment_payment';
+import { CashTransactionSourceTypeSchema, CashTransactionTypeSchema } from './cash-transactions.schemas.js';
 
-export interface CashTransactionResponse {
-  id: string;
-  householdId: string;
-  type: CashTransactionType;
-  amount: number;
-  transactionDate: string;
-  categoryId: string | null;
-  paidByUserId: string | null;
-  createdByUserId: string;
-  note: string | null;
-  sourceType: CashTransactionSourceType | null;
-  sourceId: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+export const CashTransactionResponseSchema = z.strictObject({
+  id: z.uuid(),
+  householdId: z.uuid(),
+  type: CashTransactionTypeSchema,
+  amount: z.number().int(),
+  transactionDate: z.iso.date(),
+  categoryId: z.uuid().nullable(),
+  paidByUserId: z.uuid().nullable(),
+  createdByUserId: z.uuid(),
+  note: z.string().nullable(),
+  sourceType: CashTransactionSourceTypeSchema.nullable(),
+  sourceId: z.uuid().nullable(),
+  isActive: z.boolean(),
+  createdAt: z.string().min(1),
+  updatedAt: z.string().min(1),
+});
 
-export interface CashBalanceResponse {
-  currency: 'VND';
-  incomeAmount: number;
-  expenseAmount: number;
-  balance: number;
-}
+export const CashBalanceResponseSchema = z.strictObject({
+  currency: z.literal('VND'),
+  incomeAmount: z.number().int(),
+  expenseAmount: z.number().int(),
+  balance: z.number().int(),
+});
+
+export type CashTransactionType = z.infer<typeof CashTransactionTypeSchema>;
+export type CashTransactionSourceType = z.infer<typeof CashTransactionSourceTypeSchema>;
+export type CashTransactionResponse = z.infer<typeof CashTransactionResponseSchema>;
+export type CashBalanceResponse = z.infer<typeof CashBalanceResponseSchema>;
 
 export interface CurrentHouseholdMembership {
   householdId: string;

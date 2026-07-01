@@ -2,6 +2,14 @@ import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, Us
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
+import {
+  ApiValidationErrorResponse,
+  ApiZodBody,
+  ApiZodCreatedResponse,
+  ApiZodOkResponse,
+  ApiZodParam,
+  ApiZodQuery,
+} from '../openapi/swagger.decorators.js';
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
 import { AuthenticatedRequest } from '../auth/auth.types.js';
 import {
@@ -19,8 +27,11 @@ import {
 import { InstallmentsService } from './installments.service.js';
 import {
   InstallmentPaymentResponse,
+  InstallmentPaymentResponseSchema,
   InstallmentPlanDetailResponse,
+  InstallmentPlanDetailResponseSchema,
   InstallmentPlanResponse,
+  InstallmentPlanResponseSchema,
 } from './installments.types.js';
 
 @ApiTags('installments')
@@ -31,6 +42,9 @@ export class InstallmentsController {
   constructor(private readonly installmentsService: InstallmentsService) {}
 
   @Get('plans')
+  @ApiZodQuery(ListInstallmentPlansQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(z.array(InstallmentPlanResponseSchema), 'Installment plans matching the filters.')
   async listPlans(@Req() request: AuthenticatedRequest, @Query() query: unknown): Promise<{ data: InstallmentPlanResponse[] }> {
     return {
       data: await this.installmentsService.listInstallmentPlans(
@@ -41,6 +55,9 @@ export class InstallmentsController {
   }
 
   @Post('plans')
+  @ApiZodBody(CreateInstallmentPlanRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(InstallmentPlanDetailResponseSchema, 'Installment plan created.')
   async createPlan(@Req() request: AuthenticatedRequest, @Body() body: unknown): Promise<{ data: InstallmentPlanDetailResponse }> {
     return {
       data: await this.installmentsService.createInstallmentPlan(
@@ -51,6 +68,9 @@ export class InstallmentsController {
   }
 
   @Get('plans/:id')
+  @ApiZodParam('id', InstallmentPlanIdParamSchema, 'Installment plan identifier.')
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(InstallmentPlanDetailResponseSchema, 'Installment plan detail.')
   async getPlan(@Req() request: AuthenticatedRequest, @Param('id') id: unknown): Promise<{ data: InstallmentPlanDetailResponse }> {
     return {
       data: await this.installmentsService.getInstallmentPlan(
@@ -61,6 +81,9 @@ export class InstallmentsController {
   }
 
   @Get('payments/upcoming')
+  @ApiZodQuery(ListUpcomingInstallmentPaymentsQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(z.array(InstallmentPaymentResponseSchema), 'Upcoming installment payments.')
   async listUpcomingPayments(
     @Req() request: AuthenticatedRequest,
     @Query() query: unknown,
@@ -74,6 +97,10 @@ export class InstallmentsController {
   }
 
   @Post('payments/:id/pay')
+  @ApiZodParam('id', InstallmentPaymentIdParamSchema, 'Installment payment identifier.')
+  @ApiZodBody(PayInstallmentPaymentRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(InstallmentPaymentResponseSchema, 'Installment payment settled.')
   async payInstallment(
     @Req() request: AuthenticatedRequest,
     @Param('id') id: unknown,

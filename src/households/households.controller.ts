@@ -2,11 +2,22 @@ import { BadRequestException, Body, Controller, Get, Post, Req, UseGuards } from
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
+import {
+  ApiValidationErrorResponse,
+  ApiZodBody,
+  ApiZodCreatedResponse,
+  ApiZodOkResponse,
+} from '../openapi/swagger.decorators.js';
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
 import { AuthenticatedRequest } from '../auth/auth.types.js';
 import { CreateHouseholdMemberRequest, CreateHouseholdMemberRequestSchema } from './households.schemas.js';
 import { HouseholdsService } from './households.service.js';
-import { HouseholdMemberResponse } from './households.types.js';
+import {
+  CurrentHouseholdResponse,
+  CurrentHouseholdResponseSchema,
+  HouseholdMemberResponse,
+  HouseholdMemberResponseSchema,
+} from './households.types.js';
 
 @ApiTags('households')
 @ApiBearerAuth('bearer')
@@ -15,7 +26,16 @@ import { HouseholdMemberResponse } from './households.types.js';
 export class HouseholdsController {
   constructor(private readonly householdsService: HouseholdsService) {}
 
+  @Get('current')
+  @ApiZodOkResponse(CurrentHouseholdResponseSchema, 'Current authenticated household context.')
+  async getCurrent(@Req() request: AuthenticatedRequest): Promise<{ data: CurrentHouseholdResponse }> {
+    return {
+      data: await this.householdsService.getCurrentHousehold(this.getAuthenticatedUserId(request)),
+    };
+  }
+
   @Get('members')
+  @ApiZodOkResponse(z.array(HouseholdMemberResponseSchema), 'Active household members.')
   async listMembers(@Req() request: AuthenticatedRequest): Promise<{ data: HouseholdMemberResponse[] }> {
     return {
       data: await this.householdsService.listMembers(this.getAuthenticatedUserId(request)),
@@ -23,6 +43,9 @@ export class HouseholdsController {
   }
 
   @Post('members')
+  @ApiZodBody(CreateHouseholdMemberRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(HouseholdMemberResponseSchema, 'Household member created.')
   async createMember(@Req() request: AuthenticatedRequest, @Body() body: unknown): Promise<{ data: HouseholdMemberResponse }> {
     return {
       data: await this.householdsService.createMember(this.getAuthenticatedUserId(request), this.parseBody(CreateHouseholdMemberRequestSchema, body)),

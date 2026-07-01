@@ -2,10 +2,22 @@ import { BadRequestException, Body, Controller, Get, HttpCode, Post, Req, UseGua
 import { ApiBearerAuth, ApiNoContentResponse, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
+import {
+  ApiValidationErrorResponse,
+  ApiZodBody,
+  ApiZodCreatedResponse,
+  ApiZodOkResponse,
+} from '../openapi/swagger.decorators.js';
 import { AccessTokenGuard } from './access-token.guard.js';
 import { LoginRequest, LoginRequestSchema, RefreshTokenRequest, RefreshTokenRequestSchema, RegisterRequest, RegisterRequestSchema } from './auth.schemas.js';
 import { AuthService } from './auth.service.js';
-import { AuthenticatedRequest, AuthSessionResponse, CurrentIdentityResponse } from './auth.types.js';
+import {
+  AuthenticatedRequest,
+  AuthSessionResponse,
+  AuthSessionResponseSchema,
+  CurrentIdentityResponse,
+  CurrentIdentityResponseSchema,
+} from './auth.types.js';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -13,6 +25,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @ApiZodBody(RegisterRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(AuthSessionResponseSchema, 'Authenticated session created.')
   async register(@Body() body: unknown): Promise<{ data: AuthSessionResponse }> {
     return {
       data: await this.authService.register(this.parseBody(RegisterRequestSchema, body)),
@@ -21,6 +36,9 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
+  @ApiZodBody(LoginRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(AuthSessionResponseSchema, 'Authenticated session created.')
   async login(@Body() body: unknown): Promise<{ data: AuthSessionResponse }> {
     return {
       data: await this.authService.login(this.parseBody(LoginRequestSchema, body)),
@@ -29,6 +47,9 @@ export class AuthController {
 
   @Post('refresh')
   @HttpCode(200)
+  @ApiZodBody(RefreshTokenRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(AuthSessionResponseSchema, 'Session tokens refreshed.')
   async refresh(@Body() body: unknown): Promise<{ data: AuthSessionResponse }> {
     const input = this.parseBody(RefreshTokenRequestSchema, body);
 
@@ -39,6 +60,8 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(204)
+  @ApiZodBody(RefreshTokenRequestSchema)
+  @ApiValidationErrorResponse()
   @ApiNoContentResponse({ description: 'Refresh token invalidated.' })
   async logout(@Body() body: unknown): Promise<void> {
     const input = this.parseBody(RefreshTokenRequestSchema, body);
@@ -48,6 +71,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth('bearer')
+  @ApiZodOkResponse(CurrentIdentityResponseSchema, 'Current authenticated identity.')
   async me(@Req() request: AuthenticatedRequest): Promise<{ data: CurrentIdentityResponse }> {
     if (!request.auth) {
       throw new BadRequestException('Authenticated request context is missing.');

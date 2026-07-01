@@ -2,6 +2,11 @@ import { BadRequestException, Controller, Get, Query, Req, UseGuards } from '@ne
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
+import {
+  ApiValidationErrorResponse,
+  ApiZodOkResponse,
+  ApiZodQuery,
+} from '../openapi/swagger.decorators.js';
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
 import { AuthenticatedRequest } from '../auth/auth.types.js';
 import {
@@ -17,10 +22,15 @@ import {
 import { ReportsService } from './reports.service.js';
 import {
   AssetSummaryReportResponse,
+  AssetSummaryReportResponseSchema,
   CashFlowReportResponse,
+  CashFlowReportResponseSchema,
   MonthlySpendingReportResponse,
+  MonthlySpendingReportResponseSchema,
   SavingsSummaryReportResponse,
+  SavingsSummaryReportResponseSchema,
   UpcomingObligationsReportResponse,
+  UpcomingObligationsReportResponseSchema,
 } from './reports.types.js';
 
 @ApiTags('reports')
@@ -31,6 +41,9 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get('monthly-spending')
+  @ApiZodQuery(MonthlySpendingQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(MonthlySpendingReportResponseSchema, 'Monthly spending-incurred report.')
   async getMonthlySpending(
     @Req() request: AuthenticatedRequest,
     @Query() query: unknown,
@@ -44,6 +57,9 @@ export class ReportsController {
   }
 
   @Get('cash-flow')
+  @ApiZodQuery(CashFlowQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(CashFlowReportResponseSchema, 'Derived cash-flow report.')
   async getCashFlow(
     @Req() request: AuthenticatedRequest,
     @Query() query: unknown,
@@ -57,6 +73,9 @@ export class ReportsController {
   }
 
   @Get('upcoming-obligations')
+  @ApiZodQuery(UpcomingObligationsQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(UpcomingObligationsReportResponseSchema, 'Upcoming obligations report.')
   async getUpcomingObligations(
     @Req() request: AuthenticatedRequest,
     @Query() query: unknown,
@@ -70,6 +89,7 @@ export class ReportsController {
   }
 
   @Get('assets/summary')
+  @ApiZodOkResponse(AssetSummaryReportResponseSchema, 'Asset holdings summary report.')
   async getAssetSummary(@Req() request: AuthenticatedRequest): Promise<{ data: AssetSummaryReportResponse }> {
     return {
       data: await this.reportsService.getAssetSummary(this.getAuthenticatedUserId(request)),
@@ -77,6 +97,9 @@ export class ReportsController {
   }
 
   @Get('savings/summary')
+  @ApiZodQuery(SavingsSummaryQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(SavingsSummaryReportResponseSchema, 'Savings summary report.')
   async getSavingsSummary(
     @Req() request: AuthenticatedRequest,
     @Query() query: unknown,

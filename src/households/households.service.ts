@@ -6,11 +6,21 @@ import { DATABASE } from '../database/database.constants.js';
 import { Database } from '../database/database.types.js';
 import { householdMembers, households, users } from '../database/schema.js';
 import { CreateHouseholdMemberRequest } from './households.schemas.js';
-import { CurrentHouseholdMembership, HouseholdMemberResponse } from './households.types.js';
+import { CurrentHouseholdMembership, CurrentHouseholdResponse, HouseholdMemberResponse } from './households.types.js';
 
 @Injectable()
 export class HouseholdsService {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
+
+  async getCurrentHousehold(requesterUserId: string): Promise<CurrentHouseholdResponse> {
+    const requesterMembership = await this.resolveCurrentMembership(requesterUserId);
+
+    return {
+      id: requesterMembership.householdId,
+      name: requesterMembership.householdName,
+      role: requesterMembership.role,
+    };
+  }
 
   async createMember(requesterUserId: string, input: CreateHouseholdMemberRequest): Promise<HouseholdMemberResponse> {
     const requesterMembership = await this.resolveCurrentMembership(requesterUserId);

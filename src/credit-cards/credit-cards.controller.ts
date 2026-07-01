@@ -2,6 +2,14 @@ import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, Us
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
+import {
+  ApiValidationErrorResponse,
+  ApiZodBody,
+  ApiZodCreatedResponse,
+  ApiZodOkResponse,
+  ApiZodParam,
+  ApiZodQuery,
+} from '../openapi/swagger.decorators.js';
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
 import { AuthenticatedRequest } from '../auth/auth.types.js';
 import {
@@ -16,7 +24,12 @@ import {
   ResolveCreditCardTransactionRequestSchema,
 } from './credit-cards.schemas.js';
 import { CreditCardsService } from './credit-cards.service.js';
-import { CreditCardPaymentResponse, CreditCardTransactionResponse } from './credit-cards.types.js';
+import {
+  CreditCardPaymentResponse,
+  CreditCardPaymentResponseSchema,
+  CreditCardTransactionResponse,
+  CreditCardTransactionResponseSchema,
+} from './credit-cards.types.js';
 
 @ApiTags('credit-cards')
 @ApiBearerAuth('bearer')
@@ -26,6 +39,9 @@ export class CreditCardsController {
   constructor(private readonly creditCardsService: CreditCardsService) {}
 
   @Get('transactions')
+  @ApiZodQuery(ListCreditCardTransactionsQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(z.array(CreditCardTransactionResponseSchema), 'Credit-card transactions matching the filters.')
   async listTransactions(
     @Req() request: AuthenticatedRequest,
     @Query() query: unknown,
@@ -39,6 +55,9 @@ export class CreditCardsController {
   }
 
   @Post('transactions')
+  @ApiZodBody(CreateCreditCardTransactionRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(CreditCardTransactionResponseSchema, 'Credit-card transaction created.')
   async createTransaction(
     @Req() request: AuthenticatedRequest,
     @Body() body: unknown,
@@ -52,6 +71,10 @@ export class CreditCardsController {
   }
 
   @Post('transactions/:id/resolve')
+  @ApiZodParam('id', CreditCardTransactionIdParamSchema, 'Credit-card transaction identifier.')
+  @ApiZodBody(ResolveCreditCardTransactionRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(CreditCardPaymentResponseSchema, 'Credit-card payment created.')
   async resolveTransaction(
     @Req() request: AuthenticatedRequest,
     @Param('id') id: unknown,
@@ -67,6 +90,9 @@ export class CreditCardsController {
   }
 
   @Get('payments')
+  @ApiZodQuery(ListCreditCardPaymentsQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(z.array(CreditCardPaymentResponseSchema), 'Credit-card payments matching the filters.')
   async listPayments(@Req() request: AuthenticatedRequest, @Query() query: unknown): Promise<{ data: CreditCardPaymentResponse[] }> {
     return {
       data: await this.creditCardsService.listCreditCardPayments(

@@ -16,7 +16,7 @@ Sources:
 | Epic | Description | Status |
 | --- | --- | --- |
 | E01 Auth and Users | Email/password auth, JWT access tokens, refresh token persistence, user records, and request identity. | US-002 and US-003 implemented |
-| E02 Households | Household records, household membership, and household-scoped access foundations for business records. | member-management slice implemented by US-003; broader household CRUD/current APIs unsliced |
+| E02 Households | Household records, household membership, and household-scoped access foundations for business records. | member-management slice implemented by US-003; current-household bootstrap implemented by US-012; broader household CRUD remains unsliced |
 | E03 Categories | Income/expense categories with maximum depth of two levels and validation for category hierarchy rules. | US-004 implemented |
 | E04 Cash Transactions | Cash income/expense APIs and ledger semantics for real cash-impacting daily transactions. | US-005 implemented |
 | E05 Credit Cards | Credit-card spending, pending transactions, and per-transaction settlement payments without double-counting expense. | US-006 implemented |
@@ -27,4 +27,4 @@ Sources:
 
 ## Suggested Next Slice
 
-US-010 starts `E09 Reports` with read-only derived report endpoints for spending incurred, cash flow, upcoming obligations, asset holdings, and savings aggregation.
+US-012 starts the remaining `E02 Households` surface with the authenticated current-household bootstrap endpoint at `GET /households/current`.

@@ -2,6 +2,14 @@ import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, Us
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
+import {
+  ApiValidationErrorResponse,
+  ApiZodBody,
+  ApiZodCreatedResponse,
+  ApiZodOkResponse,
+  ApiZodParam,
+  ApiZodQuery,
+} from '../openapi/swagger.decorators.js';
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
 import { AuthenticatedRequest } from '../auth/auth.types.js';
 import {
@@ -16,7 +24,7 @@ import {
   ListAssetTransactionsQuerySchema,
 } from './assets.schemas.js';
 import { AssetsService } from './assets.service.js';
-import { AssetResponse, AssetTransactionResponse } from './assets.types.js';
+import { AssetResponse, AssetResponseSchema, AssetTransactionResponse, AssetTransactionResponseSchema } from './assets.types.js';
 
 @ApiTags('assets')
 @ApiBearerAuth('bearer')
@@ -26,6 +34,9 @@ export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
   @Get()
+  @ApiZodQuery(ListAssetsQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(z.array(AssetResponseSchema), 'Assets matching the filters.')
   async listAssets(@Req() request: AuthenticatedRequest, @Query() query: unknown): Promise<{ data: AssetResponse[] }> {
     return {
       data: await this.assetsService.listAssets(
@@ -36,6 +47,9 @@ export class AssetsController {
   }
 
   @Post()
+  @ApiZodBody(CreateAssetRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(AssetResponseSchema, 'Asset created.')
   async createAsset(@Req() request: AuthenticatedRequest, @Body() body: unknown): Promise<{ data: AssetResponse }> {
     return {
       data: await this.assetsService.createAsset(
@@ -46,6 +60,9 @@ export class AssetsController {
   }
 
   @Get('transactions')
+  @ApiZodQuery(ListAssetTransactionsQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(z.array(AssetTransactionResponseSchema), 'Asset transactions matching the filters.')
   async listAssetTransactions(
     @Req() request: AuthenticatedRequest,
     @Query() query: unknown,
@@ -59,6 +76,9 @@ export class AssetsController {
   }
 
   @Get(':id')
+  @ApiZodParam('id', AssetIdParamSchema, 'Asset identifier.')
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(AssetResponseSchema, 'Asset detail.')
   async getAsset(@Req() request: AuthenticatedRequest, @Param('id') id: unknown): Promise<{ data: AssetResponse }> {
     return {
       data: await this.assetsService.getAsset(
@@ -69,6 +89,10 @@ export class AssetsController {
   }
 
   @Post(':id/transactions')
+  @ApiZodParam('id', AssetIdParamSchema, 'Asset identifier.')
+  @ApiZodBody(CreateAssetTransactionRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(AssetTransactionResponseSchema, 'Asset transaction created.')
   async createAssetTransaction(
     @Req() request: AuthenticatedRequest,
     @Param('id') id: unknown,

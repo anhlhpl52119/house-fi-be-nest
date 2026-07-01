@@ -2,6 +2,14 @@ import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, Us
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
+import {
+  ApiValidationErrorResponse,
+  ApiZodBody,
+  ApiZodCreatedResponse,
+  ApiZodOkResponse,
+  ApiZodParam,
+  ApiZodQuery,
+} from '../openapi/swagger.decorators.js';
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
 import { AuthenticatedRequest } from '../auth/auth.types.js';
 import {
@@ -14,7 +22,7 @@ import {
   SavingDepositIdParamSchema,
 } from './savings.schemas.js';
 import { SavingsService } from './savings.service.js';
-import { SavingDepositResponse } from './savings.types.js';
+import { SavingDepositResponse, SavingDepositResponseSchema } from './savings.types.js';
 
 @ApiTags('savings')
 @ApiBearerAuth('bearer')
@@ -24,6 +32,9 @@ export class SavingsController {
   constructor(private readonly savingsService: SavingsService) {}
 
   @Get()
+  @ApiZodQuery(ListSavingDepositsQuerySchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(z.array(SavingDepositResponseSchema), 'Saving deposits matching the filters.')
   async listSavingDeposits(
     @Req() request: AuthenticatedRequest,
     @Query() query: unknown,
@@ -37,6 +48,9 @@ export class SavingsController {
   }
 
   @Post()
+  @ApiZodBody(CreateSavingDepositRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(SavingDepositResponseSchema, 'Saving deposit created.')
   async createSavingDeposit(
     @Req() request: AuthenticatedRequest,
     @Body() body: unknown,
@@ -50,6 +64,9 @@ export class SavingsController {
   }
 
   @Get(':id')
+  @ApiZodParam('id', SavingDepositIdParamSchema, 'Saving deposit identifier.')
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(SavingDepositResponseSchema, 'Saving deposit detail.')
   async getSavingDeposit(
     @Req() request: AuthenticatedRequest,
     @Param('id') id: unknown,
@@ -63,6 +80,10 @@ export class SavingsController {
   }
 
   @Post(':id/mature')
+  @ApiZodParam('id', SavingDepositIdParamSchema, 'Saving deposit identifier.')
+  @ApiZodBody(MatureSavingDepositRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodCreatedResponse(SavingDepositResponseSchema, 'Saving deposit matured.')
   async matureSavingDeposit(
     @Req() request: AuthenticatedRequest,
     @Param('id') id: unknown,

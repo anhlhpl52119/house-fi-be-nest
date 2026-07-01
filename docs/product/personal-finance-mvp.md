@@ -164,6 +164,15 @@ US-011 establishes generated API documentation for the existing backend surface:
 
 - the NestJS app exposes Swagger UI and a generated OpenAPI document for the current REST routes;
 - the document advertises the bearer token scheme used by authenticated endpoints;
+- request bodies, path params, query params, and response envelopes are described for the current API surface;
 - this slice documents existing APIs without changing financial workflows or auth rules.
 
 US-011 does not add new business endpoints, replace boundary validation, or guarantee fully detailed request/response schemas for every Zod-validated handler.
+
+US-012 establishes the current-household bootstrap slice:
+
+- authenticated members can fetch their current household id, household name, and membership role through `GET /households/current`;
+- the endpoint derives household scope from the caller's active membership rather than request input;
+- the slice adds a thin authenticated household read API without changing member creation rules or database schema.
+
+US-012 does not implement invites, household switching, member removal, or broader household profile/settings management.
