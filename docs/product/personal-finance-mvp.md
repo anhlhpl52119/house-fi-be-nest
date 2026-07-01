@@ -82,3 +82,12 @@ US-002 establishes the first auth and identity API slice:
 - default household and owner membership creation during registration.
 
 US-002 does not implement invite/member management, password reset, email verification, MFA, rate limiting, category seeding, or financial domain APIs.
+
+US-003 establishes the member-management slice for the private two-person MVP:
+
+- authenticated household owners can create the second member account with email, display name, and an initial password;
+- the new member is added to the owner's household with role `member` and can login through the existing auth API;
+- active household members can list active members in their household;
+- member creation is owner-only and the MVP household is limited to two active members.
+
+US-003 does not implement email invite tokens, existing-user attachment, household switching, member removal, password reset, email verification, MFA, rate limiting, category seeding, or financial domain APIs.

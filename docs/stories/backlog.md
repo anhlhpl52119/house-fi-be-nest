@@ -15,8 +15,8 @@ Sources:
 
 | Epic | Description | Status |
 | --- | --- | --- |
-| E01 Auth and Users | Email/password auth, JWT access tokens, refresh token persistence, user records, and request identity. | US-002 implemented |
-| E02 Households | Household records, household membership, and household-scoped access foundations for business records. | unsliced |
+| E01 Auth and Users | Email/password auth, JWT access tokens, refresh token persistence, user records, and request identity. | US-002 and US-003 implemented |
+| E02 Households | Household records, household membership, and household-scoped access foundations for business records. | member-management slice implemented by US-003; broader household CRUD/current APIs unsliced |
 | E03 Categories | Income/expense categories with maximum depth of two levels and validation for category hierarchy rules. | unsliced |
 | E04 Cash Transactions | Cash income/expense APIs and ledger semantics for real cash-impacting daily transactions. | unsliced |
 | E05 Credit Cards | Credit-card spending, pending transactions, and per-transaction settlement payments without double-counting expense. | unsliced |
@@ -27,4 +27,4 @@ Sources:
 
 ## Suggested Next Slice
 
-US-003 should probably continue with `E02 Households` or the remaining `E01 Auth and Users` member-management slice because later APIs need a way to add the second household member and consistently resolve household-scoped access.
+US-003 selected the remaining `E01 Auth and Users` member-management slice. The next slice should start `E03 Categories`, because later transaction APIs need household-scoped category records and default category setup.

@@ -1,0 +1,52 @@
+import { BadRequestException, Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { z, ZodType } from 'zod';
+
+import { AccessTokenGuard } from '../auth/access-token.guard.js';
+import { AuthenticatedRequest } from '../auth/auth.types.js';
+import { CreateHouseholdMemberRequest, CreateHouseholdMemberRequestSchema } from './households.schemas.js';
+import { HouseholdsService } from './households.service.js';
+import { HouseholdMemberResponse } from './households.types.js';
+
+@Controller('households')
+@UseGuards(AccessTokenGuard)
+export class HouseholdsController {
+  constructor(private readonly householdsService: HouseholdsService) {}
+
+  @Get('members')
+  async listMembers(@Req() request: AuthenticatedRequest): Promise<{ data: HouseholdMemberResponse[] }> {
+    return {
+      data: await this.householdsService.listMembers(this.getAuthenticatedUserId(request)),
+    };
+  }
+
+  @Post('members')
+  async createMember(@Req() request: AuthenticatedRequest, @Body() body: unknown): Promise<{ data: HouseholdMemberResponse }> {
+    return {
+      data: await this.householdsService.createMember(this.getAuthenticatedUserId(request), this.parseBody(CreateHouseholdMemberRequestSchema, body)),
+    };
+  }
+
+  private getAuthenticatedUserId(request: AuthenticatedRequest): string {
+    if (!request.auth) {
+      throw new BadRequestException('Authenticated request context is missing.');
+    }
+
+    return request.auth.userId;
+  }
+
+  private parseBody(schema: typeof CreateHouseholdMemberRequestSchema, body: unknown): CreateHouseholdMemberRequest;
+  private parseBody<T>(schema: ZodType<T>, body: unknown): T {
+    const parsed = schema.safeParse(body);
+
+    if (!parsed.success) {
+      const { fieldErrors, formErrors } = z.flattenError(parsed.error);
+      throw new BadRequestException({
+        code: 'validation_error',
+        message: 'Request validation failed.',
+        details: { fieldErrors, formErrors },
+      });
+    }
+
+    return parsed.data;
+  }
+}
