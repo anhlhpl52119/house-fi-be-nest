@@ -159,3 +159,11 @@ US-010 establishes the first reports slice across completed ledger domains:
 - authenticated members can fetch savings totals and upcoming maturities derived from saving deposits.
 
 US-010 does not implement budgets, recurring bills, asset market valuation, realized/unrealized PnL, report snapshots, exports, charts, or product audit logs.
+
+US-011 establishes generated API documentation for the existing backend surface:
+
+- the NestJS app exposes Swagger UI and a generated OpenAPI document for the current REST routes;
+- the document advertises the bearer token scheme used by authenticated endpoints;
+- this slice documents existing APIs without changing financial workflows or auth rules.
+
+US-011 does not add new business endpoints, replace boundary validation, or guarantee fully detailed request/response schemas for every Zod-validated handler.

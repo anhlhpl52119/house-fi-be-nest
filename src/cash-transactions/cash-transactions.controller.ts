@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
@@ -15,6 +16,8 @@ import {
 import { CashTransactionsService } from './cash-transactions.service.js';
 import { CashBalanceResponse, CashTransactionResponse } from './cash-transactions.types.js';
 
+@ApiTags('cash-transactions')
+@ApiBearerAuth('bearer')
 @Controller('cash-transactions')
 @UseGuards(AccessTokenGuard)
 export class CashTransactionsController {

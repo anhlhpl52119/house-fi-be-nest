@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
@@ -22,6 +23,8 @@ import {
   InstallmentPlanResponse,
 } from './installments.types.js';
 
+@ApiTags('installments')
+@ApiBearerAuth('bearer')
 @Controller('installments')
 @UseGuards(AccessTokenGuard)
 export class InstallmentsController {

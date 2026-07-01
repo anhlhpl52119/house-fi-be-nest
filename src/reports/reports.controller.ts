@@ -1,4 +1,5 @@
 import { BadRequestException, Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
@@ -22,6 +23,8 @@ import {
   UpcomingObligationsReportResponse,
 } from './reports.types.js';
 
+@ApiTags('reports')
+@ApiBearerAuth('bearer')
 @Controller('reports')
 @UseGuards(AccessTokenGuard)
 export class ReportsController {

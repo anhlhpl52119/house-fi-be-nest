@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
@@ -17,6 +18,8 @@ import {
 import { CreditCardsService } from './credit-cards.service.js';
 import { CreditCardPaymentResponse, CreditCardTransactionResponse } from './credit-cards.types.js';
 
+@ApiTags('credit-cards')
+@ApiBearerAuth('bearer')
 @Controller('credit-cards')
 @UseGuards(AccessTokenGuard)
 export class CreditCardsController {

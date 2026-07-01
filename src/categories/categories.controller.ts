@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
@@ -15,6 +16,8 @@ import {
 import { CategoriesService } from './categories.service.js';
 import { CategoryResponse } from './categories.types.js';
 
+@ApiTags('categories')
+@ApiBearerAuth('bearer')
 @Controller('categories')
 @UseGuards(AccessTokenGuard)
 export class CategoriesController {

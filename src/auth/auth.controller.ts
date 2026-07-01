@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiNoContentResponse, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
 import { AccessTokenGuard } from './access-token.guard.js';
@@ -6,6 +7,7 @@ import { LoginRequest, LoginRequestSchema, RefreshTokenRequest, RefreshTokenRequ
 import { AuthService } from './auth.service.js';
 import { AuthenticatedRequest, AuthSessionResponse, CurrentIdentityResponse } from './auth.types.js';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -37,6 +39,7 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(204)
+  @ApiNoContentResponse({ description: 'Refresh token invalidated.' })
   async logout(@Body() body: unknown): Promise<void> {
     const input = this.parseBody(RefreshTokenRequestSchema, body);
     await this.authService.logout(input.refreshToken);
@@ -44,6 +47,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth('bearer')
   async me(@Req() request: AuthenticatedRequest): Promise<{ data: CurrentIdentityResponse }> {
     if (!request.auth) {
       throw new BadRequestException('Authenticated request context is missing.');

@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
@@ -15,6 +16,8 @@ import {
 import { SavingsService } from './savings.service.js';
 import { SavingDepositResponse } from './savings.types.js';
 
+@ApiTags('savings')
+@ApiBearerAuth('bearer')
 @Controller('savings/deposits')
 @UseGuards(AccessTokenGuard)
 export class SavingsController {

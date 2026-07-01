@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
@@ -7,6 +8,8 @@ import { CreateHouseholdMemberRequest, CreateHouseholdMemberRequestSchema } from
 import { HouseholdsService } from './households.service.js';
 import { HouseholdMemberResponse } from './households.types.js';
 
+@ApiTags('households')
+@ApiBearerAuth('bearer')
 @Controller('households')
 @UseGuards(AccessTokenGuard)
 export class HouseholdsController {
