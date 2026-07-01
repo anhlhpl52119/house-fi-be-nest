@@ -1,0 +1,75 @@
+ALTER TABLE "categories" ALTER COLUMN "household_id" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "categories" ALTER COLUMN "created_by_user_id" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "categories" ADD COLUMN "background_color" varchar(40);--> statement-breakpoint
+ALTER TABLE "categories" ADD COLUMN "text_color" varchar(40);--> statement-breakpoint
+ALTER TABLE "categories" ADD COLUMN "border_color" varchar(40);--> statement-breakpoint
+ALTER TABLE "categories" ADD COLUMN "description" text;--> statement-breakpoint
+ALTER TABLE "categories" ADD COLUMN "is_system" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+CREATE INDEX "categories_system_type_idx" ON "categories" USING btree ("is_system","type");--> statement-breakpoint
+ALTER TABLE "categories" ADD CONSTRAINT "categories_system_owner_check" CHECK (("categories"."is_system" = true and "categories"."household_id" is null and "categories"."created_by_user_id" is null) or ("categories"."is_system" = false and "categories"."household_id" is not null and "categories"."created_by_user_id" is not null));--> statement-breakpoint
+INSERT INTO "categories"
+  ("id", "name", "type", "icon", "background_color", "text_color", "border_color",
+   "household_id", "created_by_user_id", "parent_id", "description", "is_system", "sort_order")
+VALUES
+('9b39285f-836a-4708-b98d-b38302997bf2', 'Cố định', 'expense', 'i-ph:arrows-clockwise-duotone', '#EFF6FF', '#1D4ED8', '#BFDBFE', NULL, NULL, NULL, 'Các khoản chi phí phát sinh đều đặn hàng tháng với số tiền xác định trước, bao gồm hóa đơn tiện ích, học phí và sinh hoạt phí.', true, 1),
+('070f9472-4800-401a-bcce-0e249851d4dd', 'Di chuyển', 'expense', 'i-ph:car-duotone', '#F0FDF4', '#15803D', '#BBF7D0', NULL, NULL, NULL, 'Các khoản chi phí liên quan đến phương tiện và đi lại hàng ngày, bao gồm nhiên liệu, bảo dưỡng, phí đường bộ và dịch vụ vận chuyển.', true, 2),
+('63bd5aa8-bb5b-420e-a054-97d7832efd42', 'Ăn uống', 'expense', 'i-ph:fork-knife-duotone', '#FFFBEB', '#B45309', '#FDE68A', NULL, NULL, NULL, 'Các khoản chi tiêu liên quan đến thực phẩm và đồ uống, bao gồm mua sắm tại chợ hoặc siêu thị, ăn ngoài, đặt giao đồ ăn và cà phê.', true, 3),
+('994dde14-ba40-4e57-b5ff-fd7751f31c3c', 'Sức khỏe', 'expense', 'i-ph:heart-duotone', '#FFF1F2', '#BE123C', '#FECDD3', NULL, NULL, NULL, 'Các khoản chi phí chăm sóc sức khỏe và bảo vệ tài chính y tế, bao gồm khám bệnh, mua thuốc, và các loại bảo hiểm.', true, 4),
+('f359c596-0581-4c35-9f53-6507aeef8a08', 'Mua sắm', 'expense', 'i-ph:shopping-bag-duotone', '#F5F3FF', '#6D28D9', '#DDD6FE', NULL, NULL, NULL, 'Các khoản chi tiêu mua sắm tài sản tiêu dùng, bao gồm đồ dùng gia đình, quần áo, thiết bị điện tử và phần mềm.', true, 5),
+('630e93cb-5acf-436a-850d-0c79a996036c', 'Xã hội', 'expense', 'i-ph:users-duotone', '#FFF7ED', '#C2410C', '#FED7AA', NULL, NULL, NULL, 'Các khoản chi phí duy trì quan hệ xã hội và cộng đồng, bao gồm quà tặng, đám tiệc, hiếu hỉ và từ thiện.', true, 6),
+('425f2b18-a2b6-4e51-85ac-935805938133', 'Giải trí', 'expense', 'i-ph:shooting-star-duotone', '#F0FDF4', '#166534', '#A7F3D0', NULL, NULL, NULL, 'Các khoản chi phí cho hoạt động nghỉ ngơi, giải trí và phát triển bản thân, bao gồm du lịch, vui chơi và học tập.', true, 7),
+('96596b46-8028-42d2-953a-0a9e8bb86db2', 'Khác', 'expense', 'i-ph:dots-three-circle-duotone', '#F9FAFB', '#374151', '#E5E7EB', NULL, NULL, NULL, 'Các khoản chi phí không thuộc nhóm nào ở trên, bao gồm phí dịch vụ ngân hàng và các chi tiêu phát sinh không phân loại được.', true, 8),
+('65a27217-9ac3-426c-855b-23a4b8fd1eca', 'Điện nước', 'expense', 'i-ph:lightning-duotone', '#EFF6FF', '#1D4ED8', '#BFDBFE', NULL, NULL, '9b39285f-836a-4708-b98d-b38302997bf2', 'Hóa đơn điện và nước hàng tháng.', true, 1),
+('54204746-3183-47d2-887b-571850ac32b0', 'Internet & điện thoại', 'expense', 'i-ph:wifi-high-duotone', '#EFF6FF', '#1D4ED8', '#BFDBFE', NULL, NULL, '9b39285f-836a-4708-b98d-b38302997bf2', 'Cước phí internet băng thông rộng và gói cước điện thoại di động hàng tháng.', true, 2),
+('05bdeff6-cc4b-4c8e-b9ae-8fa85fdef144', 'Học phí', 'expense', 'i-ph:graduation-cap-duotone', '#EFF6FF', '#1D4ED8', '#BFDBFE', NULL, NULL, '9b39285f-836a-4708-b98d-b38302997bf2', 'Học phí định kỳ cho con em đi học, bao gồm trường chính và các lớp học thêm.', true, 3),
+('6fec72a8-77c7-4620-84c0-1b06ec81712a', 'Sinh hoạt chung', 'expense', 'i-ph:house-line-duotone', '#EFF6FF', '#1D4ED8', '#BFDBFE', NULL, NULL, '9b39285f-836a-4708-b98d-b38302997bf2', 'Khoản đóng góp sinh hoạt phí gia đình hàng tháng mang tính cố định, thường dùng cho chi tiêu chung trong nhà.', true, 4),
+('2f207114-02b5-4fd8-8adf-218a45732305', 'Xăng', 'expense', 'i-ph:gas-pump-duotone', '#F0FDF4', '#15803D', '#BBF7D0', NULL, NULL, '070f9472-4800-401a-bcce-0e249851d4dd', 'Chi phí đổ xăng cho xe máy hoặc ô tô.', true, 1),
+('9d0b886e-60d0-4515-ae15-b8afcb72696c', 'Bảo dưỡng xe', 'expense', 'i-ph:wrench-duotone', '#F0FDF4', '#15803D', '#BBF7D0', NULL, NULL, '070f9472-4800-401a-bcce-0e249851d4dd', 'Chi phí sửa chữa và bảo dưỡng định kỳ xe máy hoặc ô tô, bao gồm thay nhớt, lốp, phụ tùng.', true, 2),
+('75970b62-521f-458a-bc1e-abf9de50678b', 'Phí đường & gửi xe', 'expense', 'i-ph:road-horizon-duotone', '#F0FDF4', '#15803D', '#BBF7D0', NULL, NULL, '070f9472-4800-401a-bcce-0e249851d4dd', 'Phí gửi xe tại nơi làm việc hoặc các địa điểm công cộng, phí đường bộ và cầu đường.', true, 3),
+('d5042014-895f-4671-9e9f-7f3ebe30a804', 'Grab & taxi', 'expense', 'i-ph:taxi-duotone', '#F0FDF4', '#15803D', '#BBF7D0', NULL, NULL, '070f9472-4800-401a-bcce-0e249851d4dd', 'Chi phí di chuyển bằng dịch vụ xe công nghệ hoặc taxi truyền thống như Grab, Be, Xanh SM.', true, 4),
+('5a22b13f-e337-4beb-89bf-a2b7bbb86b86', 'Chợ & siêu thị', 'expense', 'i-ph:storefront-duotone', '#FFFBEB', '#B45309', '#FDE68A', NULL, NULL, '63bd5aa8-bb5b-420e-a054-97d7832efd42', 'Mua thực phẩm, rau củ, thịt cá và đồ dùng thiết yếu tại chợ, siêu thị hoặc cửa hàng tạp hóa.', true, 1),
+('8715bef9-e15e-4c31-ae08-1b161e3297ef', 'Ăn ngoài & giao đồ', 'expense', 'i-ph:hamburger-duotone', '#FFFBEB', '#B45309', '#FDE68A', NULL, NULL, '63bd5aa8-bb5b-420e-a054-97d7832efd42', 'Chi phí ăn uống tại nhà hàng, quán ăn hoặc đặt giao đồ ăn qua ứng dụng như ShopeeFood, GrabFood.', true, 2),
+('792187ca-cca3-4791-a2e4-911b77dea749', 'Cà phê & đồ uống', 'expense', 'i-ph:coffee-duotone', '#FFFBEB', '#B45309', '#FDE68A', NULL, NULL, '63bd5aa8-bb5b-420e-a054-97d7832efd42', 'Chi phí mua cà phê, trà sữa, nước ép và các loại đồ uống khác tại quán hoặc mang đi.', true, 3),
+('134ee76f-3cfc-4e2c-85b0-099d0d5d5324', 'Khám bệnh & thuốc', 'expense', 'i-ph:first-aid-kit-duotone', '#FFF1F2', '#BE123C', '#FECDD3', NULL, NULL, '994dde14-ba40-4e57-b5ff-fd7751f31c3c', 'Chi phí thăm khám bác sĩ, xét nghiệm, chẩn đoán hình ảnh và mua thuốc điều trị hoặc thực phẩm chức năng.', true, 1),
+('5921ecc4-6f67-4647-a9b5-162f15c26da5', 'Bảo hiểm', 'expense', 'i-ph:shield-check-duotone', '#FFF1F2', '#BE123C', '#FECDD3', NULL, NULL, '994dde14-ba40-4e57-b5ff-fd7751f31c3c', 'Phí đóng bảo hiểm y tế, bảo hiểm nhân thọ, bảo hiểm xe cộ và các loại bảo hiểm khác.', true, 2),
+('c57c2715-0839-4d00-abe1-b1a6dbfc1140', 'Đồ dùng & gia dụng', 'expense', 'i-ph:couch-duotone', '#F5F3FF', '#6D28D9', '#DDD6FE', NULL, NULL, 'f359c596-0581-4c35-9f53-6507aeef8a08', 'Chi phí mua sắm đồ dùng trong nhà, vật dụng sinh hoạt, nội thất và thiết bị gia dụng.', true, 1),
+('cc5c98a2-527a-476d-9d63-559746f6cdef', 'Quần áo & phụ kiện', 'expense', 'i-ph:t-shirt-duotone', '#F5F3FF', '#6D28D9', '#DDD6FE', NULL, NULL, 'f359c596-0581-4c35-9f53-6507aeef8a08', 'Chi phí mua quần áo, giày dép, túi xách và các phụ kiện thời trang cho cả gia đình.', true, 2),
+('08a6a048-0dde-42c3-8498-28fa64a6f98d', 'Điện tử & phần mềm', 'expense', 'i-ph:device-mobile-duotone', '#F5F3FF', '#6D28D9', '#DDD6FE', NULL, NULL, 'f359c596-0581-4c35-9f53-6507aeef8a08', 'Chi phí mua thiết bị điện tử, linh kiện, đăng ký phần mềm và các dịch vụ số như Netflix, Spotify.', true, 3),
+('91cce7b4-7a27-402d-a64f-e18b5ffd53e0', 'Quà tặng & sinh nhật', 'expense', 'i-ph:gift-duotone', '#FFF7ED', '#C2410C', '#FED7AA', NULL, NULL, '630e93cb-5acf-436a-850d-0c79a996036c', 'Chi phí mua quà tặng nhân dịp sinh nhật, lễ tết, kỷ niệm cho người thân và bạn bè.', true, 1),
+('cb01b911-a8ac-47bc-98ea-d87e0a7b90ea', 'Hiếu hỉ & tiệc', 'expense', 'i-ph:champagne-duotone', '#FFF7ED', '#C2410C', '#FED7AA', NULL, NULL, '630e93cb-5acf-436a-850d-0c79a996036c', 'Chi phí tham dự đám cưới, đám tang, đầy tháng, thôi nôi và các buổi tiệc tụ họp gia đình.', true, 2),
+('d12f4c5f-4b8d-4b12-92cb-809ddba6d141', 'Từ thiện', 'expense', 'i-ph:hand-heart-duotone', '#FFF7ED', '#C2410C', '#FED7AA', NULL, NULL, '630e93cb-5acf-436a-850d-0c79a996036c', 'Các khoản đóng góp từ thiện, ủng hộ quỹ cộng đồng hoặc hỗ trợ người khó khăn.', true, 3),
+('ac731751-dedf-41c4-ba76-59107acb548f', 'Du lịch', 'expense', 'i-ph:airplane-takeoff-duotone', '#F0FDF4', '#166534', '#A7F3D0', NULL, NULL, '425f2b18-a2b6-4e51-85ac-935805938133', 'Chi phí cho các chuyến đi du lịch trong và ngoài nước, bao gồm vé máy bay, khách sạn, ăn uống và tham quan.', true, 1),
+('83aa9551-215d-4995-a89c-b6de0a5f681f', 'Vui chơi & giải trí', 'expense', 'i-ph:game-controller-duotone', '#F0FDF4', '#166534', '#A7F3D0', NULL, NULL, '425f2b18-a2b6-4e51-85ac-935805938133', 'Chi phí vui chơi giải trí như xem phim, khu vui chơi, thể thao và các hoạt động ngoài trời.', true, 2),
+('209b5cd7-4a38-41f7-ae4a-ed1aea530172', 'Sách & học tập', 'expense', 'i-ph:books-duotone', '#F0FDF4', '#166534', '#A7F3D0', NULL, NULL, '425f2b18-a2b6-4e51-85ac-935805938133', 'Chi phí mua sách, khóa học trực tuyến, tài liệu học tập và phí tham gia các lớp học nâng cao kỹ năng.', true, 3),
+('142843f2-037b-4d1d-b41f-4b7d92404707', 'Chi phí ngân hàng', 'expense', 'i-ph:bank-duotone', '#F9FAFB', '#374151', '#E5E7EB', NULL, NULL, '96596b46-8028-42d2-953a-0a9e8bb86db2', 'Phí dịch vụ ngân hàng như phí chuyển khoản, phí duy trì tài khoản, phí thẻ tín dụng hàng năm.', true, 1),
+('56d3b5a7-e034-435d-9f83-fd3f24693116', 'Khác', 'expense', 'i-ph:dots-three-outline-duotone', '#F9FAFB', '#374151', '#E5E7EB', NULL, NULL, '96596b46-8028-42d2-953a-0a9e8bb86db2', 'Các khoản chi tiêu phát sinh không thuộc bất kỳ danh mục nào đã được định nghĩa.', true, 2),
+('6e0cd10a-a2c5-42e3-94fa-f99436bd7300', 'Lương & thưởng', 'income', 'i-ph:briefcase-duotone', '#F0FDF4', '#15803D', '#BBF7D0', NULL, NULL, NULL, 'Các khoản thu nhập từ công việc làm thuê hoặc hợp đồng lao động, bao gồm lương cơ bản, thưởng định kỳ và các khoản phụ cấp.', true, 1),
+('752170fb-bfc6-43fc-a39b-6992ba9fbd6a', 'Tự doanh & freelance', 'income', 'i-ph:laptop-duotone', '#EFF6FF', '#1D4ED8', '#BFDBFE', NULL, NULL, NULL, 'Thu nhập từ hoạt động kinh doanh cá nhân, dịch vụ freelance, tư vấn hoặc bán hàng online.', true, 2),
+('803c3e07-4330-4bd5-b297-1ad221233aba', 'Đầu tư & tài sản', 'income', 'i-ph:trend-up-duotone', '#FFFBEB', '#B45309', '#FDE68A', NULL, NULL, NULL, 'Thu nhập thụ động từ các tài sản tài chính và bất động sản, bao gồm cổ tức, lãi suất, lợi nhuận và tiền cho thuê.', true, 3),
+('ae770917-9164-4648-b5bd-93f3a2f284af', 'Thu nhập khác', 'income', 'i-ph:plus-circle-duotone', '#F9FAFB', '#374151', '#E5E7EB', NULL, NULL, NULL, 'Các khoản thu nhập không thường xuyên hoặc không thuộc nhóm nào ở trên, bao gồm quà tặng, tiền mừng và bán tài sản cá nhân.', true, 4),
+('b605cfab-1b60-4e45-9b43-1b2a6d1b3c62', 'Lương', 'income', 'i-ph:money-wavy-duotone', '#F0FDF4', '#15803D', '#BBF7D0', NULL, NULL, '6e0cd10a-a2c5-42e3-94fa-f99436bd7300', 'Lương cơ bản nhận định kỳ hàng tháng từ công ty hoặc tổ chức, bao gồm lương net sau thuế và các khoản phụ cấp cố định.', true, 1),
+('b66620b7-0689-41ca-8035-1fdc34fa60a0', 'Thưởng', 'income', 'i-ph:gift-duotone', '#F0FDF4', '#15803D', '#BBF7D0', NULL, NULL, '6e0cd10a-a2c5-42e3-94fa-f99436bd7300', 'Các khoản thưởng không định kỳ từ công ty, bao gồm thưởng KPI, thưởng tháng 13, thưởng lễ tết và thưởng dự án.', true, 2),
+('42fa2798-3c77-4b51-874c-5a175eaaf971', 'Thu nhập freelance', 'income', 'i-ph:pen-nib-duotone', '#EFF6FF', '#1D4ED8', '#BFDBFE', NULL, NULL, '752170fb-bfc6-43fc-a39b-6992ba9fbd6a', 'Thu nhập từ các hợp đồng dịch vụ freelance, tư vấn hoặc làm việc theo dự án ngoài giờ.', true, 1),
+('5885803b-1c2f-41c5-9877-0399c1bd7908', 'Doanh thu kinh doanh', 'income', 'i-ph:storefront-duotone', '#EFF6FF', '#1D4ED8', '#BFDBFE', NULL, NULL, '752170fb-bfc6-43fc-a39b-6992ba9fbd6a', 'Doanh thu từ hoạt động kinh doanh cá nhân, buôn bán hoặc bán hàng online.', true, 2),
+('03fec61d-5261-4be8-a482-11d39d0319ce', 'Cổ tức & lãi đầu tư', 'income', 'i-ph:chart-line-up-duotone', '#FFFBEB', '#B45309', '#FDE68A', NULL, NULL, '803c3e07-4330-4bd5-b297-1ad221233aba', 'Cổ tức nhận được từ cổ phiếu, lãi từ trái phiếu, chứng chỉ quỹ hoặc các khoản đầu tư tài chính khác.', true, 1),
+('93dd0544-6b48-4f2d-b974-c578223d3176', 'Lãi tiết kiệm & tiền gửi', 'income', 'i-ph:piggy-bank-duotone', '#FFFBEB', '#B45309', '#FDE68A', NULL, NULL, '803c3e07-4330-4bd5-b297-1ad221233aba', 'Lãi suất nhận được từ tài khoản tiết kiệm, tiền gửi có kỳ hạn tại ngân hàng.', true, 2),
+('6b861e71-8efc-4eff-af05-3d342973ca0a', 'Cho thuê tài sản', 'income', 'i-ph:house-line-duotone', '#FFFBEB', '#B45309', '#FDE68A', NULL, NULL, '803c3e07-4330-4bd5-b297-1ad221233aba', 'Thu nhập từ cho thuê nhà, phòng trọ, mặt bằng, xe hoặc các tài sản khác.', true, 3),
+('ccc76581-d474-4a39-9795-4eaee1a2d175', 'Quà tặng & tiền mừng', 'income', 'i-ph:envelope-open-duotone', '#F9FAFB', '#374151', '#E5E7EB', NULL, NULL, 'ae770917-9164-4648-b5bd-93f3a2f284af', 'Tiền mừng nhận được trong đám cưới, sinh nhật, lễ tết hoặc quà tặng bằng tiền mặt từ người thân.', true, 1),
+('98481cd6-5625-4af5-a413-95cfacbe9d85', 'Bán đồ cá nhân', 'income', 'i-ph:recycle-duotone', '#F9FAFB', '#374151', '#E5E7EB', NULL, NULL, 'ae770917-9164-4648-b5bd-93f3a2f284af', 'Thu nhập từ bán đồ dùng cá nhân không còn sử dụng như quần áo, đồ nội thất, xe cộ không được theo dõi trong danh mục tài sản đầu tư.', true, 2),
+('21d4f06f-309d-4bf3-adfa-3c08448fc6de', 'Hoàn tiền & cashback', 'income', 'i-ph:arrow-counter-clockwise-duotone', '#F9FAFB', '#374151', '#E5E7EB', NULL, NULL, 'ae770917-9164-4648-b5bd-93f3a2f284af', 'Tiền hoàn lại từ chương trình cashback thẻ tín dụng, hoàn tiền ứng dụng ví điện tử hoặc các chương trình khuyến mãi.', true, 3),
+('913c1469-0e99-4015-84db-ae301c641afd', 'Thu nhập khác', 'income', 'i-ph:dots-three-outline-duotone', '#F9FAFB', '#374151', '#E5E7EB', NULL, NULL, 'ae770917-9164-4648-b5bd-93f3a2f284af', 'Các khoản thu nhập phát sinh không thuộc bất kỳ danh mục nào đã được định nghĩa.', true, 4)
+ON CONFLICT ("id") DO UPDATE SET
+  "name" = EXCLUDED."name",
+  "type" = EXCLUDED."type",
+  "icon" = EXCLUDED."icon",
+  "background_color" = EXCLUDED."background_color",
+  "text_color" = EXCLUDED."text_color",
+  "border_color" = EXCLUDED."border_color",
+  "household_id" = NULL,
+  "created_by_user_id" = NULL,
+  "parent_id" = EXCLUDED."parent_id",
+  "description" = EXCLUDED."description",
+  "is_system" = true,
+  "sort_order" = EXCLUDED."sort_order",
+  "is_active" = true,
+  "updated_at" = now();

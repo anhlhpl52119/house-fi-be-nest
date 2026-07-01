@@ -17,7 +17,7 @@ Sources:
 | --- | --- | --- |
 | E01 Auth and Users | Email/password auth, JWT access tokens, refresh token persistence, user records, and request identity. | US-002 and US-003 implemented |
 | E02 Households | Household records, household membership, and household-scoped access foundations for business records. | member-management slice implemented by US-003; broader household CRUD/current APIs unsliced |
-| E03 Categories | Income/expense categories with maximum depth of two levels and validation for category hierarchy rules. | unsliced |
+| E03 Categories | Income/expense categories with maximum depth of two levels and validation for category hierarchy rules. | US-004 implemented |
 | E04 Cash Transactions | Cash income/expense APIs and ledger semantics for real cash-impacting daily transactions. | unsliced |
 | E05 Credit Cards | Credit-card spending, pending transactions, and per-transaction settlement payments without double-counting expense. | unsliced |
 | E06 Installments | Installment plans, scheduled payments, actual payments, and reporting semantics for original spend versus cash flow. | unsliced |
@@ -27,4 +27,4 @@ Sources:
 
 ## Suggested Next Slice
 
-US-003 selected the remaining `E01 Auth and Users` member-management slice. The next slice should start `E03 Categories`, because later transaction APIs need household-scoped category records and default category setup.
+US-004 starts `E03 Categories` with global Vietnamese system defaults and household-scoped custom categories. The next slice should start `E04 Cash Transactions`, because the category foundation is now available for real cash income/expense records.

@@ -91,3 +91,12 @@ US-003 establishes the member-management slice for the private two-person MVP:
 - member creation is owner-only and the MVP household is limited to two active members.
 
 US-003 does not implement email invite tokens, existing-user attachment, household switching, member removal, password reset, email verification, MFA, rate limiting, category seeding, or financial domain APIs.
+
+US-004 establishes the category slice for later financial records:
+
+- system categories are global Vietnamese income/expense defaults with two-level hierarchy, icons, UI colors, and AI-readable descriptions;
+- custom categories are owned by the current household so both household members share category definitions;
+- authenticated members can list active system plus household categories, filter by type, and create/update/soft-delete household custom categories;
+- category validation enforces income/expense type, same-type parent relationships, and a maximum depth of two levels.
+
+US-004 does not implement AI natural-language transaction creation, transaction CRUD, report category usage, or admin management of system categories.
