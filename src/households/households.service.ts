@@ -5,7 +5,7 @@ import * as argon2 from 'argon2';
 import { DATABASE } from '../database/database.constants.js';
 import { Database } from '../database/database.types.js';
 import { householdMembers, households, users } from '../database/schema.js';
-import { CreateHouseholdMemberRequest } from './households.schemas.js';
+import { CreateHouseholdMemberRequest, UpdateCurrentHouseholdRequest } from './households.schemas.js';
 import { CurrentHouseholdMembership, CurrentHouseholdResponse, HouseholdMemberResponse } from './households.types.js';
 
 @Injectable()
@@ -18,6 +18,30 @@ export class HouseholdsService {
     return {
       id: requesterMembership.householdId,
       name: requesterMembership.householdName,
+      role: requesterMembership.role,
+    };
+  }
+
+  async updateCurrentHousehold(requesterUserId: string, input: UpdateCurrentHouseholdRequest): Promise<CurrentHouseholdResponse> {
+    const requesterMembership = await this.resolveCurrentMembership(requesterUserId);
+
+    if (requesterMembership.role !== 'owner') {
+      throw new ForbiddenException('Only household owners can update household settings.');
+    }
+
+    const [updatedHousehold] = await this.db
+      .update(households)
+      .set({ name: input.name, updatedAt: new Date() })
+      .where(eq(households.id, requesterMembership.householdId))
+      .returning({ id: households.id, name: households.name });
+
+    if (!updatedHousehold) {
+      throw new UnauthorizedException('User has no active household membership.');
+    }
+
+    return {
+      id: updatedHousehold.id,
+      name: updatedHousehold.name,
       role: requesterMembership.role,
     };
   }

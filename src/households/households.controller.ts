@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z, ZodType } from 'zod';
 
@@ -10,7 +10,12 @@ import {
 } from '../openapi/swagger.decorators.js';
 import { AccessTokenGuard } from '../auth/access-token.guard.js';
 import { AuthenticatedRequest } from '../auth/auth.types.js';
-import { CreateHouseholdMemberRequest, CreateHouseholdMemberRequestSchema } from './households.schemas.js';
+import {
+  CreateHouseholdMemberRequest,
+  CreateHouseholdMemberRequestSchema,
+  UpdateCurrentHouseholdRequest,
+  UpdateCurrentHouseholdRequestSchema,
+} from './households.schemas.js';
 import { HouseholdsService } from './households.service.js';
 import {
   CurrentHouseholdResponse,
@@ -31,6 +36,19 @@ export class HouseholdsController {
   async getCurrent(@Req() request: AuthenticatedRequest): Promise<{ data: CurrentHouseholdResponse }> {
     return {
       data: await this.householdsService.getCurrentHousehold(this.getAuthenticatedUserId(request)),
+    };
+  }
+
+  @Patch('current')
+  @ApiZodBody(UpdateCurrentHouseholdRequestSchema)
+  @ApiValidationErrorResponse()
+  @ApiZodOkResponse(CurrentHouseholdResponseSchema, 'Current household updated.')
+  async updateCurrent(@Req() request: AuthenticatedRequest, @Body() body: unknown): Promise<{ data: CurrentHouseholdResponse }> {
+    return {
+      data: await this.householdsService.updateCurrentHousehold(
+        this.getAuthenticatedUserId(request),
+        this.parseBody(UpdateCurrentHouseholdRequestSchema, body),
+      ),
     };
   }
 
@@ -61,6 +79,7 @@ export class HouseholdsController {
   }
 
   private parseBody(schema: typeof CreateHouseholdMemberRequestSchema, body: unknown): CreateHouseholdMemberRequest;
+  private parseBody(schema: typeof UpdateCurrentHouseholdRequestSchema, body: unknown): UpdateCurrentHouseholdRequest;
   private parseBody<T>(schema: ZodType<T>, body: unknown): T {
     const parsed = schema.safeParse(body);
 

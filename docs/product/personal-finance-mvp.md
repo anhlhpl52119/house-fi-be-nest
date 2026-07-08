@@ -176,3 +176,12 @@ US-012 establishes the current-household bootstrap slice:
 - the slice adds a thin authenticated household read API without changing member creation rules or database schema.
 
 US-012 does not implement invites, household switching, member removal, or broader household profile/settings management.
+
+US-013 is the selected next household settings slice:
+
+- authenticated owners can update the current household display name through `PATCH /households/current`;
+- the endpoint derives household scope from the caller's active membership rather than request input;
+- non-owner members can still read household context but cannot mutate household settings;
+- the response reuses the current household shape with id, name, and caller role.
+
+US-013 does not implement invites, household switching, member removal, role changes, ownership transfer, household deletion, or product audit logs.
