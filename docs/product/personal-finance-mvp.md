@@ -185,3 +185,11 @@ US-013 is the selected next household settings slice:
 - the response reuses the current household shape with id, name, and caller role.
 
 US-013 does not implement invites, household switching, member removal, role changes, ownership transfer, household deletion, or product audit logs.
+
+US-014 establishes a static documentation surface for the implemented backend:
+
+- the repository includes a VitePress-powered documentation site under `docs/site`;
+- the site explains product context, authentication, shared API conventions, and every implemented API group;
+- the docs complement runtime Swagger/OpenAPI by documenting workflow semantics such as generated cash flows, household scoping, and spending-incurred versus cash-flow reporting.
+
+US-014 does not change runtime API behavior, database schema, deployment hosting, or generated OpenAPI schemas.

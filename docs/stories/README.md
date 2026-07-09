@@ -5,10 +5,11 @@ and validation work.
 
 Current selected story packet:
 
-- None. US-013 was implemented; select the next product slice before creating another story packet.
+- None. US-014 was implemented; select the next product slice before creating another story packet.
 
 Recent implemented story packets:
 
+- `docs/stories/epics/E11-documentation/US-014-documentation-site.md`
 - `docs/stories/epics/E02-households/US-013-household-settings/`
 - `docs/stories/epics/E02-households/US-012-current-household.md`
 - `docs/stories/epics/E10-api-docs/US-011-openapi-swagger.md`

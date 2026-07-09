@@ -16,9 +16,10 @@ future user-provided spec.
 
 ## Folders
 
-- `product/`: current product truth, empty until a spec is derived.
+- `product/`: current product truth derived from the personal-finance backend plan.
 - `stories/`: feature packets and backlog.
 - `decisions/`: durable decisions and tradeoffs.
+- `site/`: VitePress static documentation site for the implemented API surface.
 - `demo/`: concrete walkthroughs that show how the harness transforms input
   into agent-ready work.
 - `templates/`: reusable spec-intake, story, plan, decision, and validation
@@ -26,6 +27,7 @@ future user-provided spec.
 
 ## Current State
 
-Harness v0 exists before implementation. These docs define how the project will
-grow; they do not imply that app code, tests, CI, or deployment automation exist
-yet.
+The repository now contains an implemented NestJS personal-finance backend plus
+Harness records. Use `docs/product/personal-finance-mvp.md` for product truth,
+`docs/stories/` for implementation history, and `docs/site/` for the generated
+human-readable API documentation site.

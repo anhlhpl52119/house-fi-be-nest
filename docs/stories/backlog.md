@@ -27,4 +27,4 @@ Sources:
 
 ## Suggested Next Slice
 
-No suggested next slice is selected. Choose the next product slice from the accepted MVP contract before creating another story packet.
+No suggested next slice is selected. US-014 Project API Documentation Site has been implemented; choose the next product slice before creating another story packet.

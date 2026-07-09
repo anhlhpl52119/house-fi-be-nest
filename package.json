@@ -10,6 +10,9 @@
     "start:dev": "tsx watch src/main.ts",
     "lint": "tsc --noEmit -p tsconfig.json",
     "test": "node --test --test-reporter=spec \"dist/**/*.test.js\"",
+    "docs:dev": "vitepress dev docs/site",
+    "docs:build": "vitepress build docs/site",
+    "docs:preview": "vitepress preview docs/site",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
@@ -32,7 +35,8 @@
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.31.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitepress": "^1.6.4"
   },
   "engines": {
     "node": ">=22.0.0"

@@ -43,6 +43,10 @@ build/
 .nuxt/
 out/
 .vuepress/dist
+.vitepress/cache/
+.vitepress/dist/
+docs/site/.vitepress/cache/
+docs/site/.vitepress/dist/
 
 # -------------------------------------------------------------------------
 # Testing & Code Coverage Outputs

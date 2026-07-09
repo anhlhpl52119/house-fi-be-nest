@@ -1,272 +1,346 @@
-# repository-harness
+# Personal Finance Backend
 
-Turn any software repo into an agent-ready workspace.
+NestJS + TypeScript backend for a private two-person household finance app. The API records cash transactions, credit-card spending and settlement, installments, assets, savings deposits, household settings, and derived reports.
 
-`repository-harness` is a repository-level operating harness for Claude Code,
-Codex, Cursor, and other coding agents. It gives agents the missing project
-context they need before they change code: where to start, what the product
-contract says, how risky the work is, what proof is required, and which
-decisions future agents should inherit.
+## Tech Stack
 
-The app is what users touch. The harness is what agents touch.
+- **Runtime:** Node.js 22+
+- **Framework:** NestJS 11
+- **Database:** PostgreSQL
+- **ORM/migrations:** Drizzle ORM + drizzle-kit
+- **Validation:** Zod
+- **Auth:** JWT access tokens + persisted refresh tokens
+- **API docs:** Swagger/OpenAPI
 
-## Why Star This Repo
+## Prerequisites
 
-Star this repo if you want practical, reusable patterns for making AI-assisted
-software development more reliable, inspectable, and easier for humans to steer.
+Install these before starting:
 
-This project is exploring a simple idea:
+- Node.js **22 or newer**
+- npm
+- PostgreSQL 16+ locally, or Docker to run PostgreSQL in a container
 
-> Coding agents do not only need better prompts. They need better repositories.
-
-## The Problem
-
-Most repos are built for humans reading code in a familiar codebase. Coding
-agents usually enter with only a chat prompt and a shallow snapshot of files.
-That leads to common failure modes:
-
-- The agent edits code before understanding product intent.
-- Important constraints live only in chat history or in someone's head.
-- Validation expectations are vague or discovered too late.
-- Architecture tradeoffs are repeated instead of inherited.
-- Large requests do not get broken into reviewable story-sized work.
-
-## The Harness Approach
-
-A repository starts to have a harness when it helps an agent answer practical
-engineering questions without relying only on chat history:
-
-- What should I read first?
-- What type of work is this?
-- Which product contract does it affect?
-- How risky is the change?
-- What proof will show the work is done?
-- What decision or lesson should future agents inherit?
-
-In this repo, those answers live in:
-
-- `AGENTS.md` — the stable agent shim with local project notes and Harness
-  doc links.
-- `docs/HARNESS.md` — the human-agent collaboration model.
-- `docs/FEATURE_INTAKE.md` — tiny, normal, and high-risk work classification.
-- `docs/ARCHITECTURE.md` — architecture discovery and boundary rules.
-- `docs/TEST_MATRIX.md` — behavior-to-proof validation expectations.
-- `docs/stories/` — story packets and backlog items.
-- `docs/decisions/` — durable decisions and tradeoffs.
-- `docs/templates/` — reusable spec, story, decision, and validation templates.
-
-OpenAI describes this shift as an agent-first world where humans steer and
-agents execute:
-
-https://openai.com/index/harness-engineering/
-
-## Install Harness Into A Project
-
-From a target project directory, run:
+Check your Node version:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --yes
+node --version
 ```
 
-On Windows PowerShell, run:
+## Quick Start
 
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Yes
-```
-
-If the target already has `AGENTS.md`, `docs/`, or `scripts/`, choose one:
+From the repository root:
 
 ```bash
-# Update an existing Harness repo without moving existing files
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --merge --yes
+# 1. Install dependencies
+npm install
 
-# Back up and replace AGENTS.md, docs/, and scripts/
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --override --yes
+# 2. Create local environment file
+cp .env.example .env
+
+# 3. Start PostgreSQL, then run database migrations
+npm run db:migrate
+
+# 4. Start the development server with file watching
+npm run start:dev
 ```
 
-```powershell
-# Update an existing Harness repo without moving existing files
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Merge -Yes
-
-# Back up and replace AGENTS.md, docs/, and scripts/
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Override -Yes
-```
-
-Use `--merge` when a project already has Harness and you want to append newly
-added Harness files without moving the existing `AGENTS.md`, `docs/`, or
-`scripts/` paths into backup. Existing files stay untouched; only missing
-Harness files are created.
-
-For older Harness installs whose `AGENTS.md` still contains the full generated
-operating guide, refresh it into the small stable shim:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --merge --refresh-agent-shim --yes
-```
-
-The refresh backs up the existing file. If it detects the old
-Harness-generated guide, it replaces it with the shim. If the file appears
-custom, it appends or updates a marked Harness block instead of overwriting the
-project's local instructions.
-
-If the project is driven with Claude Code, add `--claude`. Claude Code never
-auto-loads `AGENTS.md`, so without this the installed harness is invisible to
-fresh sessions. The flag installs (or refreshes) a `CLAUDE.md` whose marked
-Harness block `@`-imports `AGENTS.md` and `docs/FEATURE_INTAKE.md` into every
-session's context. An existing `CLAUDE.md` gets the block appended after a
-backup; plain installs without the flag never touch `CLAUDE.md`:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --claude --yes
-```
-
-Or install into a specific path:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --directory /path/to/project --yes
-```
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Directory C:\path\to\project -Yes
-```
-
-Use `--dry-run` on Bash or `-DryRun` on PowerShell to preview changes before
-writing files.
-
-The installer also downloads the prebuilt Harness CLI for the current platform,
-verifies its `.sha256` checksum, and installs it at
-`scripts/bin/harness-cli` on macOS/Linux or `scripts/bin/harness-cli.exe` on
-Windows. The Rust CLI is the main Harness tool and stable command path.
-
-Harness CLI release assets are published from tags by the
-`Harness CLI Release` GitHub Actions workflow. The installer expects each
-release to include `harness-cli-<platform>` and
-`harness-cli-<platform>.sha256` assets for macOS arm64, macOS x64, Linux x64,
-Linux arm64, and Windows x64. The Windows asset is
-`harness-cli-windows-x64.exe` plus `harness-cli-windows-x64.exe.sha256`.
-
-Merged pull requests are recorded in `CHANGELOG.md` by the
-`Post-Merge Maintenance` workflow. When a merged PR changes the Rust CLI source,
-schema, Cargo metadata, or CLI release packaging, that workflow bumps the CLI
-patch version, updates `scripts/harness-cli-release-tag`, creates a
-`harness-cli-v*` tag, and runs the Harness CLI release build for that tag.
-
-## Try The Flow
-
-The fastest way to understand the harness is to inspect the tiny demo:
-
-- `docs/demo/README.md`: shows how a simple product idea becomes product docs,
-  stories, validation expectations, and decisions before implementation starts.
-
-A typical flow looks like this:
+The app starts on:
 
 ```text
-human intent or product spec
-  -> product contract
-  -> feature intake
-  -> story packet
-  -> validation expectations
-  -> implementation work
-  -> decision or lesson captured for future agents
+http://localhost:3000
 ```
 
-Implementation prompts do not go straight to code. They first pass through
-feature intake, become story-sized work when needed, and then carry both product
-validation and harness maintenance expectations.
-
-## Tool Registry
-
-The harness can use optional external tools (linters, code-graph servers,
-deploy checks) without depending on any of them. You register a tool as a
-provider of a *capability*, the harness scans whether it is actually present,
-and a workflow step uses whatever is equipped — an absent tool is a clean skip,
-never a failure.
+Health check:
 
 ```bash
-# register a tool as a provider of a capability
-scripts/bin/harness-cli tool register --name deploy-check --kind cli \
-  --capability deploy-verification --command ./scripts/deploy-check.sh \
-  --responsibility Verification --description "Verify deploy health before release"
-
-# scan presence (writes present/missing/unknown)
-scripts/bin/harness-cli tool check
-
-# a step looks up what is equipped for a purpose
-scripts/bin/harness-cli query tools --capability deploy-verification --status present
+curl http://localhost:3000/health
 ```
 
-Kinds (`cli`, `binary`, `mcp`, `skill`, `http`) make it agent-generic: each
-agent runtime uses what it can orchestrate. See `docs/TOOL_REGISTRY.md` for the
-full model, the degrade ladder, and how to wire a tool into a flow step.
+Expected response:
 
-## Current State
+```json
+{"status":"ok","timestamp":"2026-01-01T00:00:00.000Z"}
+```
 
-This repository is in Harness v0.
-
-There is no application implementation and no baked-in product specification
-yet. The current work is the reusable project harness: the file structure,
-agent operating model, feature intake process, story templates, and validation
-expectations that help humans and agents turn a future user-provided spec into
-implementation work.
-
-## Product Sources
-
-No product contract is currently defined.
-
-When a user provides a project specification, add or reference it as the input
-spec for the first buildout, then derive smaller living artifacts from it:
-
-- `docs/product/`: current product contract files, created from the spec.
-- `docs/stories/`: story packets and backlog created from selected work.
-- `docs/TEST_MATRIX.md`: behavior-to-proof control panel.
-- `docs/decisions/`: durable decisions and tradeoffs.
-
-Do not keep a project-specific spec or product breakdown in this harness until
-a real project supplies one.
-
-## Repository Structure
+Swagger UI:
 
 ```text
-project/
-  AGENTS.md
-  README.md
-  docs/
-    HARNESS.md
-    FEATURE_INTAKE.md
-    ARCHITECTURE.md
-    TEST_MATRIX.md
-    HARNESS_BACKLOG.md
-    product/
-    stories/
-    decisions/
-    demo/
-    templates/
-  scripts/
-    README.md
+http://localhost:3000/api/docs
 ```
 
-## Contributing
+OpenAPI JSON:
 
-This project is early and benefits most from real-world agent failure cases,
-example harness installs, docs improvements, and reusable workflow patterns.
-See `CONTRIBUTING.md` for contribution ideas.
+```text
+http://localhost:3000/api/docs-json
+```
 
-Useful contributions include:
+## Local PostgreSQL Setup
 
-- Show how the harness works in a real project.
-- Add missing templates or improve existing ones.
-- Propose validation patterns for different stacks.
-- Share failures where an agent made the wrong change because the repo lacked
-  context.
-- Compare harness behavior across Claude Code, Codex, Cursor, and other tools.
+### Option A: Use Docker
 
-## Share
+This repository does not currently include a `docker-compose.yml`, so the fastest local database is a direct PostgreSQL container:
 
-If this idea resonates, please star the repo and share it with someone building
-with coding agents.
+```bash
+docker run --name brimdesk-postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=brimdesk_dev \
+  -p 5432:5432 \
+  -d postgres:16
+```
 
-Short description:
+If the container already exists but is stopped:
 
-> An agent-ready repo harness for Claude Code, Codex, Cursor, and other coding
-> agents: AGENTS.md, product contracts, story packets, validation matrix, and
-> decision records.
+```bash
+docker start brimdesk-postgres
+```
+
+To remove the local database container and its data:
+
+```bash
+docker rm -f brimdesk-postgres
+```
+
+### Option B: Use an Existing PostgreSQL
+
+Create a database manually, then point `DATABASE_URL` in `.env` to it.
+
+Example:
+
+```env
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/brimdesk_dev
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and adjust values as needed:
+
+```env
+NODE_ENV=development
+PORT=3000
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/brimdesk_dev
+JWT_ACCESS_SECRET=replace-with-local-access-secret
+JWT_REFRESH_SECRET=replace-with-local-refresh-secret
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=30d
+```
+
+Notes:
+
+- `PORT` defaults to `3000` if unset.
+- `DATABASE_URL` defaults to `postgres://postgres:postgres@localhost:5432/postgres` if unset, but using a dedicated dev database is safer.
+- JWT secrets must be at least 16 characters.
+- Production rejects default development-style JWT secrets.
+
+## Database Migrations
+
+Run migrations against the database in `DATABASE_URL`:
+
+```bash
+npm run db:migrate
+```
+
+Generate a new migration after changing Drizzle schema files:
+
+```bash
+npm run db:generate
+```
+
+Migration files live in:
+
+```text
+src/database/migrations/
+```
+
+The Drizzle config reads `DATABASE_URL` from the environment and falls back to:
+
+```text
+postgres://postgres:postgres@localhost:5432/postgres
+```
+
+## Development Commands
+
+```bash
+# Start dev server with watch mode
+npm run start:dev
+
+# Type-check without emitting files
+npm run lint
+
+# Build TypeScript into dist/
+npm run build
+
+# Run compiled tests from dist/
+npm test
+
+# Start the VitePress docs site
+npm run docs:dev
+
+# Build static documentation
+npm run docs:build
+
+# Generate Drizzle migrations
+npm run db:generate
+
+# Apply Drizzle migrations
+npm run db:migrate
+```
+
+Important: `npm test` looks for compiled test files under `dist/**/*.test.js`, so run `npm run build` before `npm test`.
+
+## Validation Before Opening a PR
+
+Run this sequence before handing off work:
+
+```bash
+npm run lint
+npm run build
+npm test
+```
+
+If your change touches database schema, also run:
+
+```bash
+npm run db:generate
+npm run db:migrate
+```
+
+Use a disposable local database when testing migrations for a feature branch.
+
+## API Base Paths
+
+The app uses a global API prefix for business endpoints:
+
+```text
+/api/v1
+```
+
+The health endpoint is intentionally excluded from that prefix:
+
+```text
+GET /health
+```
+
+Common endpoint groups:
+
+```text
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+POST /api/v1/auth/refresh
+POST /api/v1/auth/logout
+GET  /api/v1/auth/me
+
+GET   /api/v1/households/current
+PATCH /api/v1/households/current
+GET   /api/v1/households/members
+POST  /api/v1/households/members
+
+GET  /api/v1/categories
+POST /api/v1/categories
+
+GET  /api/v1/cash-transactions
+GET  /api/v1/cash-transactions/balance
+
+GET  /api/v1/credit-cards/transactions
+POST /api/v1/credit-cards/transactions
+
+GET  /api/v1/installments/plans
+GET  /api/v1/installments/payments/upcoming
+
+GET  /api/v1/assets
+GET  /api/v1/savings/deposits
+GET  /api/v1/reports/monthly-spending
+```
+
+Use Swagger at `/api/docs` for the full request and response shapes.
+
+## First Manual Smoke Test
+
+After `npm run db:migrate` and `npm run start:dev`, register a user:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "owner@example.com",
+    "password": "Password123!",
+    "displayName": "Owner"
+  }'
+```
+
+The response includes auth tokens. Use the access token as a bearer token for protected endpoints:
+
+```bash
+curl http://localhost:3000/api/v1/auth/me \
+  -H 'Authorization: Bearer <accessToken>'
+```
+
+## Project Structure
+
+```text
+src/
+  app.module.ts                 # NestJS root module
+  main.ts                       # server bootstrap, global prefix, Swagger setup
+  config/                       # environment parsing and config service
+  database/                     # Drizzle schema, migrations, database provider
+  auth/                         # registration, login, refresh, logout, current user
+  households/                   # current household, settings, members
+  categories/                   # system and household categories
+  cash-transactions/            # manual cash ledger and balance
+  credit-cards/                 # credit-card spending and settlement
+  installments/                 # installment plans and payments
+  assets/                       # asset definitions and buy/sell transactions
+  savings/                      # saving deposits and maturity
+  reports/                      # derived finance reports
+  health/                       # /health smoke endpoint
+  openapi/                      # Swagger helpers
+```
+
+## Troubleshooting
+
+### `npm run db:migrate` cannot connect
+
+Check that PostgreSQL is running and that `.env` has the right `DATABASE_URL`.
+
+For the Docker setup above:
+
+```bash
+docker ps
+```
+
+You should see `brimdesk-postgres` listening on port `5432`.
+
+### Port 3000 is already in use
+
+Change `PORT` in `.env`:
+
+```env
+PORT=3001
+```
+
+Then restart `npm run start:dev`.
+
+### Tests do not run or find no files
+
+Build first:
+
+```bash
+npm run build
+npm test
+```
+
+### Swagger loads but protected endpoints fail
+
+Login or register first, then click **Authorize** in Swagger and paste the access token as a bearer token.
+
+## Harness Documentation
+
+This repository also includes Harness docs for agent-assisted development and validation evidence:
+
+- `AGENTS.md`
+- `docs/HARNESS.md`
+- `docs/FEATURE_INTAKE.md`
+- `docs/ARCHITECTURE.md`
+- `docs/TEST_MATRIX.md`
+- `docs/stories/`
+- `docs/decisions/`
